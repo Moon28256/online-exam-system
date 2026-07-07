@@ -1,0 +1,34 @@
+### ============================================
+### 错题模块接口测试
+### ⚠️ 先完成一次考试（含错题）再测试
+### ============================================
+
+# 学生 token：学生登录后获取
+
+### 1. 查看我的错题本
+GET http://localhost:8080/wrong/my
+Authorization: Bearer 学生token
+
+# 返回每道错题的：
+#   id — 错题记录ID
+#   question_id — 题目ID
+#   wrong_count — 累计错误次数
+#   last_wrong_time — 最近一次错误时间
+#   type/content/answer/category/difficulty — 题目详情
+
+###
+
+### 2. 错题统计（按类别+题型分布）
+GET http://localhost:8080/wrong/statistics
+Authorization: Bearer 学生token
+
+# 返回：
+#   category — 题目类别
+#   type — 题目类型
+#   count — 错题数量
+
+###
+
+### 3. 移除某道错题（按错题记录ID）
+DELETE http://localhost:8080/wrong/错题记录ID
+Authorization: Bearer 学生token

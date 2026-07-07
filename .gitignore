@@ -1,16 +1,15 @@
-# Compiled class file
+# ============================================================
+# 在线考试系统 - 根 .gitignore
+# 各子模块（exam-frontend / exam-backend）已自带更细的规则
+# ============================================================
+
+# ---- Java 编译产物 / 日志 ----
 *.class
-
-# Log file
 *.log
+hs_err_pid*
+replay_pid*
 
-# BlueJ files
-*.ctxt
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+# ---- 构建产物 ----
 *.jar
 *.war
 *.nar
@@ -19,6 +18,31 @@
 *.tar.gz
 *.rar
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# 前端构建产物（不入库，由部署脚本生成）
+exam-frontend/dist/
+# 后端 static 目录仅保留 .gitkeep，dist 内容不入库
+exam-backend/exam-backend/src/main/resources/static/*
+!exam-backend/exam-backend/src/main/resources/static/.gitkeep
+
+# ---- IDE / 编辑器 ----
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+!.vscode/extensions.json
+*.swp
+
+# ---- 操作系统 ----
+.DS_Store
+Thumbs.db
+
+# ---- 本地配置（含密码，不提交）----
+**/application-local.properties
+**/application-prod.properties
+.env.local
+.env.*.local
+
+# ---- 临时 / 缓存 ----
+.mtj.tmp/
+*.ctxt

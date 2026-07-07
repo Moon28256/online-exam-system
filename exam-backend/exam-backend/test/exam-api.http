@@ -1,0 +1,135 @@
+### ============================================
+### 考试模块接口测试
+### ⚠️ 请先注册一个学生账号并登录获取 student_token
+### ============================================
+
+# 学生账号：student1 / 123456（先注册一次）
+# 教师账号：teacher1 / 123456
+
+### ============================================
+### 前置准备
+### ============================================
+
+### 0-1. 学生登录（获取 token）
+POST http://localhost:8080/user/login
+Content-Type: application/json
+
+{
+  "username": "student1",
+  "password": "123456"
+}
+
+### 0-2. 学生注册（如果还没注册）
+POST http://localhost:8080/user/register
+Content-Type: application/json
+
+{
+  "username": "student1",
+  "password": "123456",
+  "role": "student",
+  "realName": "张三",
+  "email": "student1@test.com"
+}
+
+### ============================================
+### 考试流程测试
+### ============================================
+
+### 1. 开始考试（把 paperId 换成实际已发布试卷的 ID）
+POST http://localhost:8080/exam/start
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJzdHVkZW50MSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgzMzI0MDg2LCJleHAiOjE3ODM0MTA0ODZ9.i_Ok0y_P50oElRTVLM3JcIT1ngJYPUAeuLTZaA1suEY
+
+{
+  "paperId": 2074035342996443137
+}
+
+# 返回结果包含：
+#   examRecordId — 考试记录ID，后续操作都要用
+#   questions[] — 题目列表（不含正确答案）
+#   duration — 考试时长（分钟）
+#   resume — true=断点续考 false=新考试
+
+###
+
+### 2. 保存单题答案（可多次调用，每题单独保存）
+POST http://localhost:8080/exam/answer
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJzdHVkZW50MSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgzMzI0MDg2LCJleHAiOjE3ODM0MTA0ODZ9.i_Ok0y_P50oElRTVLM3JcIT1ngJYPUAeuLTZaA1suEY
+
+{
+  "examRecordId": 2074042573100019713,
+  "questionId": 2074028794681323521,
+  "userAnswer": "A"
+}
+
+###
+
+### 2-2. 再保存第二题
+POST http://localhost:8080/exam/answer
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJzdHVkZW50MSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgzMzI0MDg2LCJleHAiOjE3ODM0MTA0ODZ9.i_Ok0y_P50oElRTVLM3JcIT1ngJYPUAeuLTZaA1suEY
+
+{
+  "examRecordId": 2074042573100019713,
+  "questionId": 2074028802650501122,
+  "userAnswer": "B"
+}
+
+###
+
+### 3. 交卷（自动批改）
+POST http://localhost:8080/exam/submit/2074042573100019713
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJzdHVkZW50MSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgzMzI0MDg2LCJleHAiOjE3ODM0MTA0ODZ9.i_Ok0y_P50oElRTVLM3JcIT1ngJYPUAeuLTZaA1suEY
+
+# 返回结果包含：
+#   totalScore — 总分
+#   correctCount — 正确题数
+#   totalCount — 总题数
+#   answers[] — 每道题的批改详情（用户答案/正确答案/是否得分）
+
+###
+
+### 4. 考试详情（查看批改结果）
+GET http://localhost:8080/exam/record/2074042573100019713
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJzdHVkZW50MSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgzMzI0MDg2LCJleHAiOjE3ODM0MTA0ODZ9.i_Ok0y_P50oElRTVLM3JcIT1ngJYPUAeuLTZaA1suEY
+
+###
+
+### 5. 我的考试记录
+GET http://localhost:8080/exam/my-list
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJzdHVkZW50MSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgzMzI0MDg2LCJleHAiOjE3ODM0MTA0ODZ9.i_Ok0y_P50oElRTVLM3JcIT1ngJYPUAeuLTZaA1suEY
+
+###
+
+### ============================================
+### 异常场景测试
+### ============================================
+
+### 6. 重复开始同一试卷（应返回 resume=true 断点续考）
+POST http://localhost:8080/exam/start
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJzdHVkZW50MSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgzMzI0MDg2LCJleHAiOjE3ODM0MTA0ODZ9.i_Ok0y_P50oElRTVLM3JcIT1ngJYPUAeuLTZaA1suEY
+
+{
+  "paperId": 2074035342996443137
+}
+
+###
+
+### 7. 对已提交的考试保存答案（应报错"考试已结束"）
+POST http://localhost:8080/exam/answer
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJzdHVkZW50MSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgzMzI0MDg2LCJleHAiOjE3ODM0MTA0ODZ9.i_Ok0y_P50oElRTVLM3JcIT1ngJYPUAeuLTZaA1suEY
+
+{
+  "examRecordId": 2074039714098835457,
+  "questionId": 2074028794681323521,
+  "userAnswer": "B"
+}
+
+###
+
+### 8. 重复交卷（应报错"考试已提交过"）
+POST http://localhost:8080/exam/submit/2074039714098835457
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwidXNlcm5hbWUiOiJzdHVkZW50MSIsInJvbGUiOiJzdHVkZW50IiwiaWF0IjoxNzgzMzI0MDg2LCJleHAiOjE3ODM0MTA0ODZ9.i_Ok0y_P50oElRTVLM3JcIT1ngJYPUAeuLTZaA1suEY

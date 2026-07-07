@@ -1,0 +1,65 @@
+### ============================================
+### 试卷模块接口测试
+### ============================================
+
+### 1. 手动组卷 — 选择题目创建试卷
+POST http://localhost:8080/paper/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwidXNlcm5hbWUiOiJ0ZWFjaGVyMSIsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzgzMzIxNzMwLCJleHAiOjE3ODM0MDgxMzB9.4Uj2csFI3KTAOD8I95haFNGrJfVjG4mo_v7qrdLhWj0
+
+{
+  "title": "Java基础测试卷",
+  "description": "考查Java语言基础知识",
+  "duration": 60,
+  "startTime": "2026-07-10 09:00:00",
+  "endTime": "2026-07-10 11:00:00",
+  "creatorId": 3,
+  "questions": [
+    {"questionId": 2074028794681323521, "score": 10},
+    {"questionId": 2074028802650501122, "score": 10},
+    {"questionId": 2074028810728730625, "score": 10},
+    {"questionId": 2074030106240184321, "score": 10}
+  ]
+}
+
+###
+
+### 2. 查询所有试卷
+GET http://localhost:8080/paper/list
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwidXNlcm5hbWUiOiJ0ZWFjaGVyMSIsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzgzMzIxNzMwLCJleHAiOjE3ODM0MDgxMzB9.4Uj2csFI3KTAOD8I95haFNGrJfVjG4mo_v7qrdLhWj0
+
+###
+
+### 3. 查试卷详情（把 id 换成实际值）
+GET http://localhost:8080/paper/2074035342996443137
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwidXNlcm5hbWUiOiJ0ZWFjaGVyMSIsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzgzMzIxNzMwLCJleHAiOjE3ODM0MDgxMzB9.4Uj2csFI3KTAOD8I95haFNGrJfVjG4mo_v7qrdLhWj0
+
+###
+
+### 4. 查看试卷题目列表（把 id 换成实际值）
+GET http://localhost:8080/paper/2074035342996443137/questions
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwidXNlcm5hbWUiOiJ0ZWFjaGVyMSIsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzgzMzIxNzMwLCJleHAiOjE3ODM0MDgxMzB9.4Uj2csFI3KTAOD8I95haFNGrJfVjG4mo_v7qrdLhWj0
+
+###
+
+### 5. 发布试卷
+PUT http://localhost:8080/paper/publish/2074035342996443137
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwidXNlcm5hbWUiOiJ0ZWFjaGVyMSIsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzgzMzIxNzMwLCJleHAiOjE3ODM0MDgxMzB9.4Uj2csFI3KTAOD8I95haFNGrJfVjG4mo_v7qrdLhWj0
+
+###
+
+### 5.5 取消发布（退回草稿）
+PUT http://localhost:8080/paper/unpublish/2074035342996443137
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwidXNlcm5hbWUiOiJ0ZWFjaGVyMSIsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzgzMzIxNzMwLCJleHAiOjE3ODM0MDgxMzB9.4Uj2csFI3KTAOD8I95haFNGrJfVjG4mo_v7qrdLhWj0
+
+###
+
+### 6. 按状态筛选 — 只看已发布的试卷
+GET http://localhost:8080/paper/list?status=published
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwidXNlcm5hbWUiOiJ0ZWFjaGVyMSIsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzgzMzIxNzMwLCJleHAiOjE3ODM0MDgxMzB9.4Uj2csFI3KTAOD8I95haFNGrJfVjG4mo_v7qrdLhWj0
+
+###
+
+### 7. 真正删除试卷（物理删除，不可恢复）
+DELETE http://localhost:8080/paper/2074033223136497665
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzIiwidXNlcm5hbWUiOiJ0ZWFjaGVyMSIsInJvbGUiOiJ0ZWFjaGVyIiwiaWF0IjoxNzgzMzIxNzMwLCJleHAiOjE3ODM0MDgxMzB9.4Uj2csFI3KTAOD8I95haFNGrJfVjG4mo_v7qrdLhWj0
