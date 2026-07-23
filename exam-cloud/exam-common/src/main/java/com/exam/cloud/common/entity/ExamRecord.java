@@ -1,5 +1,6 @@
 package com.exam.cloud.common.entity;
 
+import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -9,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Data
 @TableName("exam_record")
-public class ExamRecord {
+public class ExamRecord implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     private Long userId;

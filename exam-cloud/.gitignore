@@ -15,6 +15,6 @@ build/
 deploy/logs/
 *.log
 
-# 前端构建产物（部署时拷入，不入库）
-exam-gateway/src/main/resources/static/assets/
-exam-gateway/src/main/resources/static/index.html
+# 前端构建产物（部署时拷入，不入库；仅保留 .gitkeep 占位）
+exam-gateway/src/main/resources/static/*
+!exam-gateway/src/main/resources/static/.gitkeep

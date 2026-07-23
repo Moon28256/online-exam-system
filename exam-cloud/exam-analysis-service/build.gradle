@@ -8,6 +8,7 @@ dependencies {
     implementation project(':exam-common')
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.9'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery'

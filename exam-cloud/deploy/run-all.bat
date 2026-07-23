@@ -1,61 +1,75 @@
 @echo off
 REM ============================================
-REM ä¸€é”®æž„å»º + å¯åŠ¨å…¨éƒ¨ Spring Cloud æœåŠ¡
-REM ä¾èµ–ï¼šNacos / MySQL / Redis å·²å°±ç»ª
-REM æ—¥å¿—: deploy\logs\*.log   åœæ­¢: deploy\stop-all.bat
+REM Ò»¼ü¹¹½¨ + Æô¶¯È«²¿ Spring Cloud ·þÎñ
+REM ÒÀÀµ£ºNacos / MySQL / Redis ÒÑ¾ÍÐ÷
+REM   - Nacos£ºË«»÷ nacos-start.bat Æô¶¯
+REM ÈÕÖ¾: deploy\logs\*.log   Í£Ö¹: deploy\stop-all.bat
 REM ============================================
-title åœ¨çº¿è€ƒè¯•ç³»ç»Ÿ - æœåŠ¡å¯åŠ¨å™¨
+title ÔÚÏß¿¼ÊÔÏµÍ³ - ·þÎñÆô¶¯Æ÷
 
+setlocal enabledelayedexpansion
 set ROOT=%~dp0..
 set VER=0.0.1-SNAPSHOT
 set LOGDIR=%ROOT%\deploy\logs
 if not exist "%LOGDIR%" mkdir "%LOGDIR%"
 
 echo ================================================
-echo  åœ¨çº¿è€ƒè¯•ç³»ç»Ÿ Spring Cloud ä¸€é”®å¯åŠ¨
+echo  ÔÚÏß¿¼ÊÔÏµÍ³ Spring Cloud Ò»¼üÆô¶¯
 echo ================================================
 
-REM ---------- æž„å»ºå…¨éƒ¨å¯æ‰§è¡Œ jarï¼ˆè·³è¿‡æµ‹è¯•ï¼‰ ----------
+REM ---------- ¼ì²é Nacos ÊÇ·ñÔÚÏß ----------
 echo.
-echo [æž„å»º] ç¼–è¯‘æ‰“åŒ…å…¨éƒ¨æœåŠ¡...
+echo [¼ì²é] Nacos Á¬Í¨ÐÔ ...
+powershell -NoProfile -Command "try { $r = Invoke-WebRequest -Uri 'http://127.0.0.1:8848/nacos/' -TimeoutSec 3 -UseBasicParsing; if ($r.StatusCode -eq 200) { exit 0 } else { exit 1 } } catch { exit 1 }" >nul 2>&1
+if errorlevel 1 (
+    echo [¾¯¸æ] Nacos Î´ÏìÓ¦ http://127.0.0.1:8848/nacos
+    echo        ÇëÏÈË«»÷ deploy\nacos-start.bat Æô¶¯ Nacos£¬µÈÔ¼ 20 ÃëºóÔÙÔËÐÐ±¾½Å±¾¡£
+    echo.
+    choice /c YN /m "ÈÔÒªÇ¿ÐÐÆô¶¯¿¼ÊÔ·þÎñÂð?(Y=ÊÇ/N=·ñ)"
+    if errorlevel 2 goto :eof
+)
+
+REM ---------- ¹¹½¨È«²¿¿ÉÖ´ÐÐ jar£¨Ìø¹ý²âÊÔ£© ----------
+echo.
+echo [¹¹½¨] ±àÒë´ò°üÈ«²¿·þÎñ...
 cd /d "%ROOT%"
 call gradlew.bat bootJar -x test --no-daemon
 if errorlevel 1 (
-    echo æž„å»ºå¤±è´¥, è¯·æ£€æŸ¥é”™è¯¯æ—¥å¿—
+    echo ¹¹½¨Ê§°Ü£¬Çë¼ì²é´íÎóÈÕÖ¾
     pause
     exit /b 1
 )
 
-REM ---------- å¯åŠ¨ä¸šåŠ¡æœåŠ¡ ----------
+REM ---------- Æô¶¯ÒµÎñ·þÎñ ----------
 echo.
-echo [å¯åŠ¨] ä¾æ¬¡å¯åŠ¨æœåŠ¡...
+echo [Æô¶¯] ÒÀ´ÎÆô¶¯·þÎñ...
 
-call :start exam-user-service      8081 "ç”¨æˆ·æœåŠ¡"
-call :start exam-question-service  8082 "é¢˜ç›®æœåŠ¡"
-call :start exam-paper-service     8083 "è¯•å·æœåŠ¡"
-call :start exam-exam-service      8084 "è€ƒè¯•æœåŠ¡"
-call :start exam-score-service     8085 "æˆç»©æœåŠ¡"
-call :start exam-wrong-service     8086 "é”™é¢˜æœåŠ¡"
-call :start exam-analysis-service  8087 "åˆ†æžæœåŠ¡"
+call :start exam-user-service      8081 "ÓÃ»§·þÎñ"
+call :start exam-question-service  8082 "ÌâÄ¿·þÎñ"
+call :start exam-paper-service     8083 "ÊÔ¾í·þÎñ"
+call :start exam-exam-service      8084 "¿¼ÊÔ·þÎñ"
+call :start exam-score-service     8085 "³É¼¨·þÎñ"
+call :start exam-wrong-service     8086 "´íÌâ·þÎñ"
+call :start exam-analysis-service  8087 "·ÖÎö·þÎñ"
 
-echo ç­‰å¾…ä¸šåŠ¡æœåŠ¡æ³¨å†Œåˆ° Nacosï¼ˆçº¦ 15 ç§’ï¼‰...
+echo µÈ´ýÒµÎñ·þÎñ×¢²áµ½ Nacos£¨Ô¼ 15 Ãë£©...
 timeout /t 15 /nobreak >nul
 
-call :start exam-gateway           8080 "ç½‘å…³"
+call :start exam-gateway           8080 "Íø¹Ø"
 
 echo.
 echo ================================================
-echo  å…¨éƒ¨å¯åŠ¨å®Œæ¯•ï¼
-echo  å¥åº·æ£€æŸ¥: http://localhost:8080/test
-echo  å‰ç«¯å…¥å£: http://localhost:8080
-echo  æ—¥å¿—ç›®å½•: deploy\logs\
-echo  å…³é—­æ‰€æœ‰: deploy\stop-all.bat
+echo  È«²¿Æô¶¯Íê±Ï£¡
+echo  ½¡¿µ¼ì²é: http://localhost:8080/test
+echo  Ç°¶ËÈë¿Ú: http://localhost:8080
+echo  ÈÕÖ¾Ä¿Â¼: deploy\logs\
+echo  ¹Ø±ÕËùÓÐ: deploy\stop-all.bat
 echo ================================================
 echo.
 pause
 goto :eof
 
-REM ---------- å¯åŠ¨å•ä¸ªæœåŠ¡ ----------
+REM ---------- Æô¶¯µ¥¸ö·þÎñ ----------
 :start
 set MODULE=%1
 set PORT=%2
@@ -63,9 +77,9 @@ set NAME=%3
 set JAR=%ROOT%\%MODULE%\build\libs\%MODULE%-%VER%.jar
 
 if not exist "%JAR%" (
-    echo [é”™è¯¯] ç¼ºå°‘ %JAR%
+    echo [´íÎó] È±ÉÙ %JAR%
     goto :eof
 )
-echo    [%PORT%] %NAME% ...
-start "%NAME%-%PORT%" /min cmd /c java -jar "%JAR%" ^> "%LOGDIR%\%MODULE%.log" 2^>^&1
+echo    [%PORT%] !NAME! ...
+start "!NAME!-!PORT!" /min cmd /c java -jar "%JAR%" ^> "%LOGDIR%\%MODULE%.log" 2^>^&1
 goto :eof

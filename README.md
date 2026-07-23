@@ -87,9 +87,13 @@ mysql -u root -p exam_system < sql/seed.sql
 ### 2. 构建并启动
 
 ```bash
-# Windows（双击即可）
-exam-cloud\deploy\build.bat      # 构建全部 jar + 前端
-exam-cloud\deploy\run-all.bat    # 启动 8 个服务
+# Windows（双击即可，顺序执行）
+exam-cloud\deploy\nacos-start.bat   # ① 启动 Nacos（首次/重启电脑后执行，等约 20 秒）
+exam-cloud\deploy\build.bat         # ② 构建全部 jar + 前端
+exam-cloud\deploy\run-all.bat       # ③ 启动 8 个服务（会自动检查 Nacos 是否在线）
+
+# 停止
+exam-cloud\deploy\stop-all.bat      # 停止 8 个服务；加参数 --with-nacos 连 Nacos 一起停
 
 # Linux / macOS
 bash exam-cloud/deploy/build.sh

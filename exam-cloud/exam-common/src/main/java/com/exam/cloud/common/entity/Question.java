@@ -1,5 +1,6 @@
 package com.exam.cloud.common.entity;
 
+import java.io.Serializable;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -8,7 +9,7 @@ import java.util.Date;
 
 @Data
 @TableName("question")
-public class Question {
+public class Question implements Serializable {
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
     private String type;        // single_choice / multi_choice / true_false / fill_blank / essay
