@@ -1,0 +1,2 @@
+# 前端构建产物（exam-frontend/dist 内容）请拷贝至此目录。
+# 部署脚本会自动执行：cp -r ../exam-frontend/dist/* static/

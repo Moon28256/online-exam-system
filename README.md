@@ -1,6 +1,6 @@
 # 📝 在线考试与学习分析系统
 
-> Spring Boot 3 + Vue 3 + MySQL 的在线考试系统，支持学生在线考试、错题本、成绩趋势分析，教师题库/试卷管理与数据分析，管理员用户管理。
+> Spring Cloud 微服务 + Vue 3 + MySQL + Redis 的在线考试系统，支持学生在线考试、错题本、成绩趋势分析，教师题库/试卷管理与数据分析，管理员用户管理。
 
 ## ✨ 功能特性
 
@@ -21,87 +21,113 @@
 - 拥有教师全部权限（可绕过归属限制管理所有题目/试卷）
 
 ### 通用
-- 🌗 **明暗双主题**：暖珊瑚色系，主题切换带涟漪动画，夜间模式保证考试文字清晰
-- 🔐 **JWT 鉴权**：登录态基于 token，雪花 ID 经 Jackson 转 String 防止精度丢失
+- 🌗 **明暗双主题**：暖珊瑚色系，主题切换带涟漪动画
+- 🔐 **JWT 鉴权**：Gateway 统一校验 + Redis Token 管理
 - 👤 **个人中心**：修改昵称/真实姓名、修改密码
-- 📱 **单端口部署**：后端同时托管前端静态资源与 API，内网穿透即可对外访问
+- 📱 **单端口部署**：网关 :8080 统一对外，内网穿透即可公网访问
 
 ## 🛠 技术栈
 
 | 层 | 技术 |
 |----|------|
-| 后端 | Spring Boot 3.4.5 · JDK 17 · Gradle (Groovy DSL) |
-| 持久层 | MyBatis-Plus 3.5.9 · MySQL 9 |
+| 后端框架 | Spring Boot 3.3.5 · Spring Cloud 2023.0.3 · Spring Cloud Alibaba 2023.0.3.2 |
+| 注册/配置 | Nacos 2.3.x |
+| 网关 | Spring Cloud Gateway |
+| 服务调用 | OpenFeign + LoadBalancer |
+| 持久层 | MyBatis-Plus 3.5.9 · MySQL |
+| 缓存/会话 | Redis（Token、热点缓存、分布式锁、限流） |
 | 安全 | JWT (jjwt 0.12.6) · BCrypt |
 | 前端 | Vue 3 · Vite · Element Plus · Vue Router · Axios · ECharts |
-| 部署 | 单 jar 同端口 · cpolar 内网穿透 |
+| 构建 | Gradle 8.10+ 多项目 · JDK 17 |
+| 部署 | 单端口 8080 · cpolar 内网穿透 |
 
 ## 📁 目录结构
 
 ```
 online-exam-system/
-├── exam-backend/                # 后端
-│   └── exam-backend/
-│       ├── build.gradle
-│       └── src/main/
-│           ├── java/com/exam/backend/
-│           └── resources/
-│               ├── application.properties   # 数据库连接支持环境变量
-│               └── static/                  # 前端构建产物（部署时填入）
-├── exam-frontend/               # 前端
-│   ├── .env.development         # VITE_API_BASE=http://localhost:8080
-│   ├── .env.production          # VITE_API_BASE=（同源）
+├── exam-cloud/                   # 后端（Spring Cloud 微服务）
+│   ├── exam-common/              #   公共库（实体/Feign/JWT/全局配置）
+│   ├── exam-gateway/             #   网关 :8080（路由+鉴权+限流+托管前端）
+│   ├── exam-user-service/        #   用户服务 :8081
+│   ├── exam-question-service/    #   题目服务 :8082
+│   ├── exam-paper-service/       #   试卷服务 :8083
+│   ├── exam-exam-service/        #   考试服务 :8084（编排核心）
+│   ├── exam-score-service/       #   成绩服务 :8085
+│   ├── exam-wrong-service/       #   错题服务 :8086
+│   ├── exam-analysis-service/    #   分析服务 :8087
+│   ├── nacos-config/             #   Nacos 共享配置参考
+│   ├── deploy/                   #   构建/启动/停止/内网穿透脚本
+│   └── README.md                 #   详细架构说明
+├── exam-frontend/                # 前端（Vue 3 + Vite）
 │   └── src/
-├── sql/                         # 数据库脚本
-│   ├── schema.sql               # 建表
-│   └── seed.sql                 # 初始用户 + 题目数据
-└── deploy/                      # 部署脚本
-    ├── build.bat / build.sh     # 构建前端+拷贝+打 jar
-    ├── run.bat / run.sh         # 运行 jar
-    └── 部署说明.md              # 完整部署与内网穿透教程
+├── sql/                          # 数据库脚本
+│   ├── schema.sql                #   建表（8 张表）
+│   └── seed.sql                  #   初始用户 + 题目数据
+└── README.md                     # 本文件
 ```
 
 ## 🚀 本地运行
 
-### 1. 准备数据库
-```bash
-# 登录 MySQL 后执行
-mysql> CREATE DATABASE exam_system DEFAULT CHARACTER SET utf8mb4;
-mysql> USE exam_system;
-mysql> source sql/schema.sql;
-mysql> source sql/seed.sql;
-```
-> 默认连接：`localhost:3306/exam_system`，用户 `root`，密码见 `application.properties` 中的 `${DB_PASSWORD:...}` 默认值。如需修改，设置环境变量 `DB_URL` / `DB_USER` / `DB_PASSWORD` 即可。
+### 前置依赖
 
-### 2. 一键构建并运行
+| 组件 | 说明 |
+|------|------|
+| **MySQL** | 9.x，默认 `localhost:3306` |
+| **Redis** | 6+，默认 `127.0.0.1:6379` |
+| **Nacos** | 2.3.x standalone，默认 `127.0.0.1:8848` |
+
+### 1. 初始化数据库
+
 ```bash
-# Windows
-deploy\build.bat
-deploy\run.bat
+mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS exam_system DEFAULT CHARSET utf8mb4"
+mysql -u root -p exam_system < sql/schema.sql
+mysql -u root -p exam_system < sql/seed.sql
+```
+
+### 2. 构建并启动
+
+```bash
+# Windows（双击即可）
+exam-cloud\deploy\build.bat      # 构建全部 jar + 前端
+exam-cloud\deploy\run-all.bat    # 启动 8 个服务
 
 # Linux / macOS
-bash deploy/build.sh
-bash deploy/run.sh
+bash exam-cloud/deploy/build.sh
+bash exam-cloud/deploy/run-all.sh
 ```
-访问 **http://localhost:8080** 即可。
 
-### 3. 分别开发（可选）
-- 前端热更新：`cd exam-frontend && npm install && npm run dev`（默认 5173，已配置代理到 8080）
-- 后端：`cd exam-backend/exam-backend && ./gradlew bootRun`
+访问 **http://localhost:8080**。
+
+停止：`exam-cloud\deploy\stop-all.bat`（或 `.sh`）。
+
+### 3. 前端热更新开发（可选）
+
+```bash
+cd exam-frontend
+npm install
+npm run dev        # 默认 :5173，已代理 API 到 :8080
+```
 
 ## 🌐 对外部署（发网址给别人用）
 
-见 [deploy/部署说明.md](deploy/部署说明.md) —— 用 cpolar 内网穿透把本地 8080 端口映射成公网网址，免费、无需服务器。
+使用 cpolar 内网穿透，把本地 8080 映射成公网地址：
+
+1. 从 https://www.cpolar.com/download 下载安装 cpolar
+2. 首次使用执行：`cpolar authtoken <你的token>`
+3. 双击 `exam-cloud\deploy\online.bat`（或 PowerShell 执行 `online.ps1`）
+4. 终端打印 `https://xxx.cpolar.cn` 公网地址，发给别人即可访问
 
 ## 📌 默认账号
 
-> 首次初始化后请尽快修改密码（个人中心 → 修改密码）。
+> 首次使用后请尽快修改密码（个人中心 → 修改密码）。
 
-| 角色 | 用户名 | 说明 |
+| 角色 | 用户名 | 密码 |
 |------|--------|------|
-| 管理员 | 见 sql/seed.sql | 拥有全部权限 |
-| 教师 | teacher1 等 | 题库/试卷创建者 |
-| 学生 | 见 seed 数据 | 参加考试 |
+| 管理员 | admin | 123456 |
+| 教师 | teacher1 | 123456 |
+| 学生 | student1 | 123456 |
+
+更多账号见 `sql/seed.sql`。
 
 ## 📄 许可
 

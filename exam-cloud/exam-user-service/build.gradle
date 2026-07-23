@@ -1,0 +1,21 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+description = '用户服务：注册/登录/个人中心，签发并写 Redis 的 Token'
+
+dependencies {
+    implementation project(':exam-common')
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.9'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+    implementation 'org.springframework.security:spring-security-crypto'
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery'
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

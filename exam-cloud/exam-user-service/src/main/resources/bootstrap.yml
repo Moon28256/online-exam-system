@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: exam-user-service
+  profiles:
+    active: dev
+  cloud:
+    nacos:
+      server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+      discovery:
+        server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NS:public}
+      config:
+        server-addr: ${NACOS_ADDR:127.0.0.1:8848}
+        namespace: ${NACOS_NS:public}
+        file-extension: yml
+        # 公共共享配置（DB/Redis/JWT 等），Nacos 中不存在则忽略
+        shared-configs:
+          - data-id: exam-shared.yml
+            refresh: true
+        # 配置缺失不阻断启动
+        fail-fast: false

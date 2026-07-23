@@ -1,0 +1,32 @@
+# Nacos 共享配置 exam-shared.yml
+#
+# 将本文件内容导入 Nacos 配置中心（data-id: exam-shared.yml，group: DEFAULT_GROUP，类型 yaml）。
+# 各服务 bootstrap.yml 已声明 shared-configs 引用此 data-id，启动时自动拉取覆盖本地默认值。
+#
+# 本地开发可不导入——各服务 application.yml 已含同样的默认值（环境变量可覆盖）。
+# 生产部署建议把 DB/Redis/JWT 等敏感信息集中到 Nacos，不写进代码库。
+
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/exam_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8}
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD:mzls6666mo}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      database: ${REDIS_DB:0}
+
+# JWT（user-service 与 gateway 必须一致）
+exam:
+  jwt:
+    secret: ${JWT_SECRET:OnlineExamSystem2026SecretKeyForJWT!!}
+    expiration: ${JWT_EXPIRATION:86400000}
+  redis:
+    token-ttl: ${TOKEN_TTL:86400}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true

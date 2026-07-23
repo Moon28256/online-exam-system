@@ -1,0 +1,11 @@
+rootProject.name = 'exam-cloud'
+
+include ':exam-common'
+include ':exam-gateway'
+include ':exam-user-service'
+include ':exam-question-service'
+include ':exam-paper-service'
+include ':exam-exam-service'
+include ':exam-score-service'
+include ':exam-wrong-service'
+include ':exam-analysis-service'

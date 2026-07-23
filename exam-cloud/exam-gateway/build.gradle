@@ -1,0 +1,19 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+description = '网关：路由分发 + JWT/Redis 鉴权 + 注入用户头 + 限流 + 托管前端'
+
+dependencies {
+    implementation project(':exam-common')
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-discovery'
+    implementation 'com.alibaba.cloud:spring-cloud-starter-alibaba-nacos-config'
+    implementation 'org.springframework.cloud:spring-cloud-starter-bootstrap'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

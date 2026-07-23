@@ -1,0 +1,22 @@
+description = 'exam-cloud 公共库：实体/DTO/Result/JwtUtil/Feign 客户端/全局配置'
+
+// 作为普通库被各服务引用：应用 boot 插件以获得 spring-boot-dependencies BOM（解析版本），
+// 但禁用可执行 jar 打包。io.spring.dependency-management 已由根 build.gradle 统一应用。
+apply plugin: 'org.springframework.boot'
+
+bootJar {
+    enabled = false
+}
+jar {
+    enabled = true
+}
+
+dependencies {
+    // 仅编译期需要，运行期由各服务提供（避免把 webmvc 拖进 gateway 等反应式服务）
+    compileOnly 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.springframework.boot:spring-boot-autoconfigure'
+    compileOnly 'com.baomidou:mybatis-plus-spring-boot3-starter:3.5.9'
+    compileOnly 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    compileOnly 'io.jsonwebtoken:jjwt-api:0.12.6'
+    compileOnly 'org.springframework.security:spring-security-crypto'
+}
